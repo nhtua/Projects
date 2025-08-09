@@ -3,3 +3,6 @@ name = "numbers"
 version = "0.1.0"
 edition = "2024"
 authors = ["Liam Nguyen<5275627+nhtua@users.noreply.github.com>"]
+
+[dependencies]
+rug = "1.27.0"

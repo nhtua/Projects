@@ -16,5 +16,5 @@ fn main() {
         return;
     };
 
-    println!("Hello, world! This is PI={}", pi::sprint(digits as i32));
+    println!("Hello, world! This is PI={}", pi::sprint(digits as u32));
 }
