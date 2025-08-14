@@ -1,33 +1,41 @@
 use rug::Float;
+use rug::ops::Pow;
 
-pub fn find(precision: u32) -> Float {
-    let xprec = precision + 16;
-    let round = precision.pow(2) * 16;
-    let mut i: u32 = 1;
-    let mut sign: i8 = 1;
-    let mut sum: Float = Float::new(xprec);
-    while i < round {
-        sum += sign * aterm(xprec, i);
-        sign *= -1;
-        i += 1;
-    }
-    3 + Float::with_val(xprec, sum)
-}
 pub fn sprint(len: u32) -> String {
-    let pi = find(len);
+    let n_term = len / 8 + 1;
+    let pi = chudnovsky(n_term, len);
     pi.to_string_radix(10, Some(len as usize))
         .split_at((len) as usize)
         .0
         .to_string()
 }
-fn aterm(precision: u32, g: u32) -> Float {
-    let four = Float::with_val(precision, 4);
-    let g_float = Float::with_val(precision, g);
-    let two = Float::with_val(precision, 2);
-    let one = Float::with_val(precision, 1);
 
-    let term1 = Float::with_val(precision, &g_float * &two);
-    let term2 = Float::with_val(precision, &term1 + &one);
-    let term3 = Float::with_val(precision, &term1 + &two);
-    four / (term1 * term2 * term3)
+fn chudnovsky(number_of_term: u32, precision: u32) -> Float {
+    Float::with_val(precision, 1)
+        / (Float::with_val(precision, 12) * sigma(number_of_term, precision))
+}
+fn sigma(number_of_term: u32, precision: u32) -> Float {
+    let round: u32 = number_of_term * 14;
+    let mut k: u32 = 0;
+    let mut total: Float = Float::with_val(precision, 0);
+    while k < round {
+        let sign_val = if k % 2 == 0 { 1.0f64 } else { -1.0f64 };
+        let up = Float::with_val(precision, sign_val)
+            * factorial(6 * k, precision)
+            * Float::with_val(precision, 545140134 * k as i64 + 13591409);
+        let down_fact_3k = factorial(3 * k, precision);
+        let down_fact_k_pow3 = factorial(k, precision).pow(Float::with_val(precision, 3.0));
+        let down_const_pow = Float::with_val(precision, 640320.0f64)
+            .pow(Float::with_val(precision, (3 * k) as f64 + 1.5));
+        let down: Float = down_fact_3k * down_fact_k_pow3 * down_const_pow;
+        let sum_a_term = up / down;
+        total += sum_a_term;
+        k += 1;
+    }
+    total
+}
+fn factorial(n: u32, precision: u32) -> Float {
+    (2..=n).fold(Float::with_val(precision, 1), |acc, x| {
+        acc * Float::with_val(precision, x)
+    })
 }
