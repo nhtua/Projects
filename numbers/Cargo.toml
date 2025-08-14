@@ -6,3 +6,5 @@ authors = ["Liam Nguyen<5275627+nhtua@users.noreply.github.com>"]
 
 [dependencies]
 rug = "1.27.0"
+rayon = "1.9.0"
+num_cpus = "1.17.0"
