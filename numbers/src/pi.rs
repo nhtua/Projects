@@ -3,21 +3,31 @@ use rug::Float;
 use rug::ops::Pow;
 
 pub fn sprint(len: u32) -> String {
-    let n_term = len / 8 + 1;
-    let pi = chudnovsky(n_term, len);
+    let pi = find(len);
     pi.to_string_radix(10, Some(len as usize))
         .split_at((len) as usize)
         .0
         .to_string()
 }
 
-fn chudnovsky(number_of_term: u32, precision: u32) -> Float {
+pub fn find(len: u32) -> Float {
+    //Module interface
+    chudnovsky(len)
+}
+
+fn chudnovsky(len: u32) -> Float {
+    //rug::Float(precision) **precision**  is a fixed number to determine the length of an arbitrary number.
+    //So we have to make precision far larger then the number_of_term to it have enough room to
+    //contains the output. However each term gives about 14 digits after decimal point.
+    //Then not necessarily len==term. By practical experiment, I found number_of_term could be
+    let number_of_term: u32 = len / 4;
+    let precision: u32 = number_of_term * 14;
     Float::with_val(precision, 1)
         / (Float::with_val(precision, 12) * sigma(number_of_term, precision))
 }
+
 fn sigma(number_of_term: u32, precision: u32) -> Float {
-    let round: u32 = number_of_term * 14;
-    (0..round)
+    (0..number_of_term)
         .into_par_iter()
         .map(|k| {
             let sign_val = if k % 2 == 0 { 1.0f64 } else { -1.0f64 };
@@ -33,6 +43,7 @@ fn sigma(number_of_term: u32, precision: u32) -> Float {
         })
         .reduce(|| Float::with_val(precision, 0), |a, b| a + b)
 }
+
 fn factorial(n: u32, precision: u32) -> Float {
     (2..=n).fold(Float::with_val(precision, 1), |acc, x| {
         acc * Float::with_val(precision, x)
