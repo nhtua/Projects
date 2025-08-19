@@ -1,0 +1,41 @@
+name: Rust Monorepo CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  list-projects:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.get-dirs.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find all Rust projects
+        id: get-dirs
+        # The 'ls' command lists all directories under 'src/'
+        # 'jq -R -s -c' processes the output into a JSON array, which is required for the matrix
+        run: |
+          dirs=$(ls -d src/*/ | sed 's/src\///g' | sed 's/\///g')
+          # Create a JSON array with each directory
+          matrix=$(echo $dirs | jq -R -s 'split(" ") | map(select(length > 0))' | jq -c '{"project": .}')
+          echo "::set-output name=matrix::$matrix"
+  build-and-test:
+      needs: list-projects
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+        matrix: ${{ fromJson(needs.list-projects.outputs.matrix) }}
+      steps:
+        - uses: actions/checkout@v4
+        - name: Build and test ${{ matrix.project }}
+          run: |
+            cd src/${{ matrix.project }}
+            cargo check
+            cargo build --verbose
+            cargo test --bin ${{ matrix.project }}
