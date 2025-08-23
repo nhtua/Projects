@@ -15,36 +15,6 @@ pub fn find(len: u32) -> Float {
     chudnovsky(len)
 }
 
-/// Module interface
-/// Interactive mode
-pub fn interact() {
-    println!("*** Pi calculator ***");
-    loop {
-        println!("\n? Enter the desired length of Pi:");
-        println!("(or Enter to quit): ");
-        let mut input = String::new();
-        std::io::stdin()
-            .read_line(&mut input)
-            .expect("Failed to read line");
-        let input = input.trim();
-
-        if input.is_empty() {
-            break;
-        }
-
-        let len: u32 = match input.parse() {
-            Ok(num) => num,
-            Err(_) => {
-                println!("Invalid input. Please enter a positive integer or 'exit'.");
-                continue;
-            }
-        };
-
-        let pi_string = sprint(len);
-        println!("Pi ({len} digits): {pi_string}");
-    }
-}
-
 fn chudnovsky(len: u32) -> Float {
     //rug::Float(precision) **precision**  is a fixed number to determine the length of an arbitrary number.
     //So we have to make precision far larger then the number_of_term to it have enough room to
