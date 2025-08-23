@@ -2,6 +2,8 @@ use rayon::prelude::*;
 use rug::Float;
 use rug::ops::Pow;
 
+/// Module interface
+/// Return big value as a string
 pub fn sprint(len: u32) -> String {
     let pi = find(len);
     pi.to_string_radix(10, Some((len + 1) as usize))
@@ -11,6 +13,36 @@ pub fn sprint(len: u32) -> String {
 /// Note that `len` here is the number of terms that calculates sigma, not the len of precision
 pub fn find(len: u32) -> Float {
     chudnovsky(len)
+}
+
+/// Module interface
+/// Interactive mode
+pub fn interact() {
+    println!("*** Pi calculator ***");
+    loop {
+        println!("\n? Enter the desired length of Pi:");
+        println!("(or Enter to quit): ");
+        let mut input = String::new();
+        std::io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
+        let input = input.trim();
+
+        if input.is_empty() {
+            break;
+        }
+
+        let len: u32 = match input.parse() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("Invalid input. Please enter a positive integer or 'exit'.");
+                continue;
+            }
+        };
+
+        let pi_string = sprint(len);
+        println!("Pi ({len} digits): {pi_string}");
+    }
 }
 
 fn chudnovsky(len: u32) -> Float {
