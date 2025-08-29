@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{CommandFactory, Parser, Subcommand};
 
 mod e_const;
 mod pi;
@@ -7,7 +7,7 @@ mod pi;
 #[command(author, version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
@@ -27,7 +27,7 @@ struct PiArgs {
 
 #[derive(clap::Args)]
 struct EArgs {
-    /// Length of e to generate
+    /// Length of e (Euler constant) to generate
     #[arg(short, long, default_value_t = 100)]
     len: usize,
 }
@@ -36,13 +36,18 @@ fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Pi(args) => {
+        Some(Commands::Pi(args)) => {
             let pi_string = pi::sprint(args.len as u32);
             println!("Pi ({} digits): {}", args.len, pi_string);
         }
-        Commands::E(args) => {
+        Some(Commands::E(args)) => {
             let e_string = e_const::sprint(args.len as u32);
             println!("e ({} digits): {}", args.len, e_string);
+        }
+        None => {
+            // If no subcommand is provided, print the help message.
+            // clap automatically generates a help message for the top-level command.
+            Cli::command().print_help().unwrap();
         }
     }
 }
