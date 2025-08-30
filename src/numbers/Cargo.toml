@@ -5,6 +5,7 @@ edition = "2024"
 authors = ["Liam Nguyen<5275627+nhtua@users.noreply.github.com>"]
 
 [dependencies]
+clap = { version = "4.0", features = ["derive"] }
 rug = "1.27.0"
 rayon = "1.9.0"
 num_cpus = "1.17.0"
