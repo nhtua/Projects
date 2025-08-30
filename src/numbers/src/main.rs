@@ -2,6 +2,9 @@ use clap::{CommandFactory, Parser, Subcommand};
 
 mod e_const;
 mod pi;
+mod processor;
+
+use crate::processor::Finder;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -37,11 +40,13 @@ fn main() {
 
     match &cli.command {
         Some(Commands::Pi(args)) => {
-            let pi_string = pi::sprint(args.len as u32);
+            let p = pi::Pi { len: args.len };
+            let pi_string = p.sprint();
             println!("Pi ({} digits): {}", args.len, pi_string);
         }
         Some(Commands::E(args)) => {
-            let e_string = e_const::sprint(args.len as u32);
+            let e = e_const::EulerConst { len: args.len };
+            let e_string = e.sprint();
             println!("e ({} digits): {}", args.len, e_string);
         }
         None => {
