@@ -1,6 +1,7 @@
 use clap::{CommandFactory, Parser, Subcommand};
 
 mod e_const;
+mod fibonacci;
 mod pi;
 mod processor;
 
@@ -19,6 +20,8 @@ enum Commands {
     Pi(PiArgs),
     /// Generate e to the Nth Digit
     E(EArgs),
+    /// Print Fibonacci sequence up to a max value
+    Fibo(FiboArgs),
 }
 
 #[derive(clap::Args)]
@@ -35,6 +38,13 @@ struct EArgs {
     len: usize,
 }
 
+#[derive(clap::Args)]
+struct FiboArgs {
+    /// Length of e (Euler constant) to generate
+    #[arg(short, long, default_value_t = 100)]
+    up_to: usize,
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -48,6 +58,11 @@ fn main() {
             let e = e_const::EulerConst { len: args.len };
             let e_string = e.sprint();
             println!("e ({} digits): {}", args.len, e_string);
+        }
+        Some(Commands::Fibo(args)) => {
+            let fibo = fibonacci::Fibonacci { up_to: args.up_to };
+            let sfibo = fibo.sprint();
+            println!("Fibonacci sequence (under {}): {}", args.up_to, sfibo);
         }
         None => {
             // If no subcommand is provided, print the help message.
