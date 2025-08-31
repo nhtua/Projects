@@ -1,7 +1,8 @@
 use rug::Float;
 
 pub trait Finder {
-    fn find(&self) -> Float;
+    type Output;
+    fn find(&self) -> Self::Output;
     fn sprint(&self) -> String;
 }
 

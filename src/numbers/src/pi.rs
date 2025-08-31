@@ -9,6 +9,7 @@ pub struct Pi {
 }
 
 impl Finder for Pi {
+    type Output = Float;
     /// Module interface
     /// Return big value as a string
     fn sprint(&self) -> String {
@@ -18,7 +19,7 @@ impl Finder for Pi {
 
     /// Module interface
     /// Note that `len` here is the number of terms that calculates sigma, not the len of precision
-    fn find(&self) -> Float {
+    fn find(&self) -> Self::Output {
         chudnovsky(self.len as u32)
     }
 }
